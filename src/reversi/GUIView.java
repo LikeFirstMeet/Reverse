@@ -60,21 +60,22 @@ public class GUIView implements IView {
         for (int i = 0; i < 64; i++) {
             int x = i % 8;
             int y = i / 8;
-            SquareButton button1 = new SquareButton(x, y);
-            button1.setOpaque(true);
-            button1.setPreferredSize(new Dimension(80, 80));
-            button1.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-
+            SquareButton button1;
             // Set the color of the circle
             if ((x == 3 || x == 4) && (y == 3 || y == 4)) {
                 if ((x == 3 && y == 3) || (x == 4 && y == 4)) {
-                    button1.setPlayer(1);  // White circle
+                    button1 = new SquareButtonWhite(x, y,1); // White circle
                 } else {
-                    button1.setPlayer(2);  // Black circle
+                    button1 = new SquareButtonBlack(x, y,2);// Black circle
                 }
+               
+                
             } else {
-                button1.setPlayer(0);  // No circle
+            	button1 = new SquareButton(x, y,0);  // No circle
             }
+            button1.setOpaque(true);
+            button1.setPreferredSize(new Dimension(80, 80));
+            button1.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
             button1.addActionListener(new SquareButtonListener(controller, 1, x, y)); // Pass controller reference and square coordinates
             board1.add(button1, BorderLayout.CENTER);
@@ -115,22 +116,21 @@ public class GUIView implements IView {
         for (int i = 64; i > 0; i--) {
             int x = (i - 1) % 8;
             int y = (i - 1) / 8;
-            SquareButton button2 = new SquareButton(x, y);
-            button2.setOpaque(true);
-            button2.setPreferredSize(new Dimension(80, 80));
-            button2.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            SquareButton button2;
 
             // Set the color of the circle
             if ((x == 3 || x == 4) && (y == 3 || y == 4)) {
                 if ((x == 3 && y == 4) || (x == 4 && y == 3)) {
-                    button2.setPlayer(1);  // White circle
+                	button2 = new SquareButtonBlack(x, y,1);
                 } else {
-                    button2.setPlayer(2);  // Black circle
+                    button2 =new SquareButtonWhite(x, y,2);
                 }
             } else {
-                button2.setPlayer(0);  // No circle
+            	button2 = new SquareButton(x, y,0); // No circle
             }
-
+            button2.setOpaque(true);
+            button2.setPreferredSize(new Dimension(80, 80));
+            button2.setBorder(BorderFactory.createLineBorder(Color.BLACK));
             button2.addActionListener(new SquareButtonListener(controller, 2, x, y)); // Pass controller reference and square coordinates
             board2.add(button2, BorderLayout.CENTER);
         }
@@ -150,7 +150,6 @@ public class GUIView implements IView {
         // Display the frames
         frame1.pack();
         frame1.setVisible(true);
-
         frame2.pack();
         frame2.setVisible(true);
     }
@@ -212,10 +211,14 @@ public class GUIView implements IView {
         private int x;
         private int y;
         private int player;
-
         public SquareButton(int x, int y) {
             this.x = x;
             this.y = y;
+        }
+        public SquareButton(int x, int y,int player) {
+            this.x = x;
+            this.y = y;
+            this.player=player;
         }
 
         public int getXCoordinate() {
@@ -237,7 +240,6 @@ public class GUIView implements IView {
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-
             // Draw green square
             g.setColor(Color.GREEN);
             g.fillRect(0, 0, getWidth(), getHeight());
@@ -249,9 +251,97 @@ public class GUIView implements IView {
             // Draw circle with border
             if (player == 1) {
                 g.setColor(Color.WHITE);
+                int circleSize = (int) (Math.min(getWidth(), getHeight()) * 0.9);
+                int circleX = (getWidth() - circleSize) / 2;
+                int circleY = (getHeight() - circleSize) / 2;
+                g.fillOval(circleX, circleY, circleSize, circleSize);
+
+                g.setColor(Color.BLACK);
+                g.drawOval(circleX, circleY, circleSize, circleSize);
             } else if (player == 2) {
                 g.setColor(Color.BLACK);
+                int circleSize = (int) (Math.min(getWidth(), getHeight()) * 0.9);
+                int circleX = (getWidth() - circleSize) / 2;
+                int circleY = (getHeight() - circleSize) / 2;
+                g.fillOval(circleX, circleY, circleSize, circleSize);
+
+                g.setColor(Color.WHITE);
+                g.drawOval(circleX, circleY, circleSize, circleSize);
             }
+            
+        }
+        
+    }
+    private class SquareButtonWhite extends SquareButton {
+        public SquareButtonWhite(int x, int y) {
+			super(x, y);
+			// TODO Auto-generated constructor stub
+		}
+        public SquareButtonWhite(int x, int y,int player) {
+			super(x, y,player);
+			// TODO Auto-generated constructor stub
+		}
+
+		@Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            // Draw green square
+            g.setColor(Color.GREEN);
+            g.fillRect(0, 0, getWidth(), getHeight());
+
+            // Draw black border
+            g.setColor(Color.BLACK);
+            g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
+
+            // Draw circle with border
+            g.setColor(Color.BLACK);
+            int circleSize = (int) (Math.min(getWidth(), getHeight()) * 0.9);
+            int circleX = (getWidth() - circleSize) / 2;
+            int circleY = (getHeight() - circleSize) / 2;
+            g.fillOval(circleX, circleY, circleSize, circleSize);
+
+            g.setColor(Color.WHITE);
+            g.drawOval(circleX, circleY, circleSize, circleSize);
+            
+            if (super.player == 1) {
+                g.setColor(Color.WHITE);
+                g.fillOval(circleX, circleY, circleSize, circleSize);
+                g.setColor(Color.BLACK);
+                g.drawOval(circleX, circleY, circleSize, circleSize);
+            } else if (super.player == 2) {
+                g.setColor(Color.BLACK);
+                g.fillOval(circleX, circleY, circleSize, circleSize);
+                g.setColor(Color.WHITE);
+                g.drawOval(circleX, circleY, circleSize, circleSize);
+            }
+            
+        }
+        
+    }
+    private class SquareButtonBlack extends SquareButton {
+        
+        public SquareButtonBlack(int x, int y) {
+			super(x, y);
+			// TODO Auto-generated constructor stub
+		}
+        public SquareButtonBlack(int x, int y,int player) {
+			super(x, y,player);
+			// TODO Auto-generated constructor stub
+		}
+
+		@Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            // Draw green square
+            g.setColor(Color.GREEN);
+            g.fillRect(0, 0, getWidth(), getHeight());
+
+            // Draw black border
+            g.setColor(Color.BLACK);
+            g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
+
+            // Draw circle with border
+            g.setColor(Color.WHITE);
             int circleSize = (int) (Math.min(getWidth(), getHeight()) * 0.9);
             int circleX = (getWidth() - circleSize) / 2;
             int circleY = (getHeight() - circleSize) / 2;
@@ -259,7 +349,22 @@ public class GUIView implements IView {
 
             g.setColor(Color.BLACK);
             g.drawOval(circleX, circleY, circleSize, circleSize);
+            if (super.player == 1) {
+                g.setColor(Color.WHITE);
+                g.fillOval(circleX, circleY, circleSize, circleSize);
+                g.setColor(Color.BLACK);
+                g.drawOval(circleX, circleY, circleSize, circleSize);
+            } else if (super.player == 2) {
+                g.setColor(Color.BLACK);
+                g.fillOval(circleX, circleY, circleSize, circleSize);
+                g.setColor(Color.WHITE);
+                g.drawOval(circleX, circleY, circleSize, circleSize);
+            }
+            
         }
+        
     }
+    
+    
 }
 
